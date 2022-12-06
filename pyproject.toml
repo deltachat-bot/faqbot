@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=45", "setuptools_scm[toml]>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "faqbot"
+description = "FAQ bot, help to answer common questions in support groups"
+dependencies = [
+    "SQLAlchemy==1.4.44",
+    "aiosqlite==0.17.0",    
+    "appdirs==1.4.4",
+]
+dynamic = [
+    "version"
+]
+
+[tool.isort]
+profile = "black"
+
+[tool.mypy]
+#ignore_missing_imports = "True"
