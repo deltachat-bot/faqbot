@@ -15,8 +15,11 @@ dynamic = [
     "version"
 ]
 
+[project.scripts]
+faqbot = "faqbot:main"
+
 [tool.isort]
 profile = "black"
 
 [tool.mypy]
-#ignore_missing_imports = "True"
+ignore_missing_imports = "True"

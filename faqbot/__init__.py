@@ -131,8 +131,12 @@ async def answer_msg(msg: AttrDict) -> None:
                 await msg.chat.send_message(**kwargs)
 
 
-async def main():
+async def _main():
     logging.basicConfig(level=logging.INFO)
     path = os.path.join(config_dir, "sqlite.db")
     await init(f"sqlite+aiosqlite:///{path}")
     await run_bot_cli(hooks)
+
+
+def main():
+    asyncio.run(_main())

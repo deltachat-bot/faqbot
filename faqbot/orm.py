@@ -1,12 +1,11 @@
 """database"""
-import asyncio
 
 from sqlalchemy import Column, Integer, LargeBinary, String
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 
 Base = declarative_base()
-_session = None
+_session = None  # noqa
 
 
 class FAQ(Base):
