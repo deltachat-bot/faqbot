@@ -12,11 +12,18 @@ from .orm import init
 config_dir = user_config_dir("faqbot")
 if not os.path.exists(config_dir):
     os.makedirs(config_dir)
+def_accounts_dir = os.path.join(config_dir, "accounts")
 
 
 def get_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser("faqbot")
-    parser.add_argument("--accounts", "-a", help="accounts folder")
+    parser.add_argument(
+        "--accounts",
+        "-a",
+        help="accounts folder (default: %(default)s)",
+        metavar="PATH",
+        default=def_accounts_dir,
+    )
     subparsers = parser.add_subparsers(title="subcommands")
 
     init_parser = subparsers.add_parser("init", help="initialize the account")
