@@ -16,7 +16,7 @@ dynamic = [
 ]
 
 [project.scripts]
-faqbot = "faqbot:main"
+faqbot = "faqbot.cli:main"
 
 [tool.isort]
 profile = "black"
