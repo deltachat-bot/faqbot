@@ -1,7 +1,7 @@
 """database"""
 import asyncio
 
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, LargeBinary, String
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 
@@ -13,7 +13,11 @@ class FAQ(Base):
     __tablename__ = "faq"
     chat_id = Column(Integer, primary_key=True)
     question = Column(String, primary_key=True)
-    answer = Column(String)
+    answer_text = Column(String)
+    answer_html = Column(String)
+    answer_file = Column(LargeBinary)
+    answer_filename = Column(String)
+    answer_viewtype = Column(String, nullable=False)
 
 
 def async_session():
