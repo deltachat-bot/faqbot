@@ -53,7 +53,6 @@ async def init_cmd(bot: Bot, args: argparse.Namespace) -> None:
 
 async def config_cmd(bot: Bot, args: argparse.Namespace) -> None:
     if args.value:
-        args.acct.set_config(args.option, args.value)
         await bot.account.set_config(args.option, args.value)
 
     if args.option:
