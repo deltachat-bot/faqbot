@@ -76,7 +76,7 @@ async def remove_cmd(msg: AttrDict) -> None:
 async def save_cmd(msg: AttrDict) -> None:
     question = msg.text.split(maxsplit=1)[1]
     if question.startswith("/"):
-        msg.chat.send_message(
+        await msg.chat.send_message(
             text="Invalid text, can not start with /", quoted_msg=msg.id
         )
         return
