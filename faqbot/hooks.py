@@ -37,7 +37,7 @@ async def _get_answer_text(faq: FAQ, msg: AttrDict) -> str:
 
 
 @hooks.on(events.NewMessage(r"^/help$"))
-async def help_cmd(msg: AttrDict) -> None:
+async def help_cmd(event: AttrDict) -> None:
     text = """
            **Available commands**
 
@@ -51,39 +51,41 @@ async def help_cmd(msg: AttrDict) -> None:
 
 
            """
-    await msg.chat.send_text(text)
+    await event.chat.send_text(text)
 
 
 @hooks.on(events.NewMessage(r"^/faq$"))
-async def faq_cmd(msg: AttrDict) -> None:
-    text = await _get_faq(msg.chat_id)
-    await msg.chat.send_text(f"**FAQ**\n\n{text}")
+async def faq_cmd(event: AttrDict) -> None:
+    text = await _get_faq(event.chat_id)
+    await event.chat.send_text(f"**FAQ**\n\n{text}")
 
 
 @hooks.on(events.NewMessage(r"^/remove .+"))
-async def remove_cmd(msg: AttrDict) -> None:
-    question = msg.text.split(maxsplit=1)[1]
-    stmt = select(FAQ).filter(FAQ.chat_id == msg.chat_id, FAQ.question == question)
+async def remove_cmd(event: AttrDict) -> None:
+    question = event.text.split(maxsplit=1)[1]
+    stmt = select(FAQ).filter(FAQ.chat_id == event.chat_id, FAQ.question == question)
     async with async_session() as session:
         async with session.begin():
             faq = (await session.execute(stmt)).scalars().first()
             if faq:
                 await session.delete(faq)
-                await msg.chat.send_message(text="✅ Note removed", quoted_msg=msg.id)
+                await event.chat.send_message(
+                    text="✅ Note removed", quoted_msg=event.id
+                )
 
 
 @hooks.on(events.NewMessage(r"^/save .+"))
-async def save_cmd(msg: AttrDict) -> None:
-    question = msg.text.split(maxsplit=1)[1]
+async def save_cmd(event: AttrDict) -> None:
+    question = event.text.split(maxsplit=1)[1]
     if question.startswith("/"):
-        await msg.chat.send_message(
-            text="Invalid text, can not start with /", quoted_msg=msg.id
+        await event.chat.send_message(
+            text="Invalid text, can not start with /", quoted_msg=event.id
         )
         return
-    quote = msg.quote
+    quote = event.quote
     assert quote
     quote = await (
-        await msg.message.account.get_message_by_id(quote.message_id)
+        await event.message.account.get_message_by_id(quote.message_id)
     ).get_snapshot()
     if quote.file:
         async with aiofiles.open(quote.file, mode="rb") as attachment:
@@ -94,7 +96,7 @@ async def save_cmd(msg: AttrDict) -> None:
         async with session.begin():
             session.add(
                 FAQ(
-                    chat_id=msg.chat_id,
+                    chat_id=event.chat_id,
                     question=question,
                     answer_text=quote.text,
                     answer_filename=quote.file_name,
@@ -102,24 +104,26 @@ async def save_cmd(msg: AttrDict) -> None:
                     answer_viewtype=quote.view_type,
                 )
             )
-    await msg.chat.send_message(text="✅ Saved", quoted_msg=msg.id)
+    await event.chat.send_message(text="✅ Saved", quoted_msg=event.id)
 
 
 @hooks.on(events.NewMessage(r"^(?!/).+"))
-async def answer_msg(msg: AttrDict) -> None:
+async def answer_msg(event: AttrDict) -> None:
     async with async_session() as session:
-        stmt = select(FAQ).filter(FAQ.chat_id == msg.chat_id, FAQ.question == msg.text)
+        stmt = select(FAQ).filter(
+            FAQ.chat_id == event.chat_id, FAQ.question == event.text
+        )
         faq = (await session.execute(stmt)).scalars().first()
         if faq:
-            quoted_msg_id = msg.quote.message_id if msg.quote else msg.id
+            quoted_msg_id = event.quote.message_id if event.quote else event.id
             kwargs = dict(
-                text=await _get_answer_text(faq, msg), quoted_msg=quoted_msg_id
+                text=await _get_answer_text(faq, event), quoted_msg=quoted_msg_id
             )
             if faq.answer_file:
                 async with aiofiles.tempfile.TemporaryDirectory() as tmp_dir:
                     filename = os.path.join(tmp_dir, faq.answer_filename)
                     async with aiofiles.open(filename, mode="wb") as attachment:
                         await attachment.write(faq.answer_file)
-                    await msg.chat.send_message(file=filename, **kwargs)
+                    await event.chat.send_message(file=filename, **kwargs)
             else:
-                await msg.chat.send_message(**kwargs)
+                await event.chat.send_message(**kwargs)

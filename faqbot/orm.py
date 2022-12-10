@@ -8,7 +8,7 @@ Base = declarative_base()
 _session = None  # noqa
 
 
-class FAQ(Base):
+class FAQ(Base):  # noqa
     __tablename__ = "faq"
     chat_id = Column(Integer, primary_key=True)
     question = Column(String, primary_key=True)
@@ -26,7 +26,7 @@ def async_session():
 
 async def init(path: str, debug: bool = False) -> None:
     """Initialize engine."""
-    global _session
+    global _session  # noqa
     engine = create_async_engine(path, echo=debug)
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
