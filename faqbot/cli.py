@@ -4,9 +4,10 @@ import logging
 import os
 
 from appdirs import user_config_dir
-from deltachat_rpc_client import Bot, DeltaChat, Rpc
+from deltachat_rpc_client import AttrDict, Bot, DeltaChat, EventType, Rpc, events
 from deltachat_rpc_client.rpc import JsonRpcError
 from rich.logging import RichHandler
+from rich.progress import track
 
 from .hooks import hooks
 from .orm import init
@@ -15,6 +16,24 @@ config_dir = user_config_dir("faqbot")
 if not os.path.exists(config_dir):
     os.makedirs(config_dir)
 def_accounts_dir = os.path.join(config_dir, "accounts")
+
+
+class ConfigProgressBar:
+    def __init__(self) -> None:
+        self.progress = 0
+        self.total = 1000
+        self.tracker = track(range(self.total), description="Configuring...")
+
+    def set_progress(self, progress: int) -> None:
+        if progress == 0:
+            self.progress = -1
+        else:
+            progress = progress - self.progress
+            [_ for _ in zip(self.tracker, range(progress))]
+            self.progress += progress
+
+    def close(self) -> None:
+        self.tracker.close()
 
 
 def get_parser() -> argparse.ArgumentParser:
@@ -48,9 +67,28 @@ def get_parser() -> argparse.ArgumentParser:
 
 
 async def init_cmd(bot: Bot, args: argparse.Namespace) -> None:
-    logging.info("Configuring...")
-    asyncio.create_task(bot.configure(email=args.email, password=args.password))
-    await bot.run_forever()
+    async def on_progress(event: AttrDict) -> None:
+        if event.comment:
+            logging.info(event.comment)
+        bar.set_progress(event.progress)
+
+    async def configure() -> None:
+        try:
+            await bot.configure(email=args.addr, password=args.password)
+        except JsonRpcError as err:
+            logging.error(err)
+
+    logging.info("Starting configuration process...")
+    bar = ConfigProgressBar()
+    bot.add_hook(on_progress, events.RawEvent(EventType.CONFIGURE_PROGRESS))
+    task = asyncio.create_task(configure())
+    await bot.run_while(lambda _: bar.progress != -1 and bar.progress != bar.total)
+    await task
+    bar.close()
+    if bar.progress == -1:
+        logging.error("Configuration failed.")
+    else:
+        logging.info("Account configured successfully.")
 
 
 async def config_cmd(bot: Bot, args: argparse.Namespace) -> None:
