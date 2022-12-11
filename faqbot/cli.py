@@ -82,7 +82,7 @@ async def init_cmd(bot: Bot, args: argparse.Namespace) -> None:
     bar = ConfigProgressBar()
     bot.add_hook(on_progress, events.RawEvent(EventType.CONFIGURE_PROGRESS))
     task = asyncio.create_task(configure())
-    await bot.run_while(lambda _: bar.progress != -1 and bar.progress != bar.total)
+    await bot.run_until(lambda _: bar.progress == -1 or bar.progress == bar.total)
     await task
     bar.close()
     if bar.progress == -1:
