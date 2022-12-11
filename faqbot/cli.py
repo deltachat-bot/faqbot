@@ -1,10 +1,12 @@
 import argparse
 import asyncio
+import logging
 import os
 
 from appdirs import user_config_dir
 from deltachat_rpc_client import Bot, DeltaChat, Rpc
 from deltachat_rpc_client.rpc import JsonRpcError
+from rich.logging import RichHandler
 
 from .hooks import hooks
 from .orm import init
@@ -46,7 +48,7 @@ def get_parser() -> argparse.ArgumentParser:
 
 
 async def init_cmd(bot: Bot, args: argparse.Namespace) -> None:
-    print("Configuring...")
+    logging.info("Configuring...")
     asyncio.create_task(bot.configure(email=args.email, password=args.password))
     await bot.run_forever()
 
@@ -60,7 +62,7 @@ async def config_cmd(bot: Bot, args: argparse.Namespace) -> None:
             value = await bot.account.get_config(args.option)
             print(f"{args.option}={value!r}")
         except JsonRpcError:
-            print(f"Unknown configuration option: {args.option}")
+            logging.error(f"Unknown configuration option: {args.option}")
     else:
         keys = (await bot.account.get_config("sys.config_keys")) or ""
         for key in keys.split():
@@ -71,12 +73,16 @@ async def config_cmd(bot: Bot, args: argparse.Namespace) -> None:
 async def set_avatar_cmd(bot: Bot, args: argparse.Namespace) -> None:
     await bot.account.set_avatar(args.path)
     if args.path:
-        print("Avatar updated.")
+        logging.info("Avatar updated.")
     else:
-        print("Avatar removed.")
+        logging.info("Avatar removed.")
 
 
 async def _main():
+    FORMAT = "%(message)s"
+    logging.basicConfig(
+        level=logging.INFO, format=FORMAT, handlers=[RichHandler(show_path=False)]
+    )
     args = get_parser().parse_args()
 
     path = os.path.join(config_dir, "sqlite.db")
@@ -95,7 +101,7 @@ async def _main():
             if await bot.is_configured():
                 await bot.run_forever()
             else:
-                print("Account is not configured")
+                logging.error("Account is not configured")
 
 
 def main():

@@ -1,3 +1,4 @@
+import logging
 import os
 
 import aiofiles
@@ -11,7 +12,7 @@ hooks = events.HookCollection()
 
 @hooks.on(events.RawEvent((EventType.INFO, EventType.WARNING, EventType.ERROR)))
 async def log_event(event: AttrDict) -> None:
-    print(f"{event.type.upper()}: {event.msg}")
+    getattr(logging, event.type.lower())(event.msg)
 
 
 async def _get_faq(chat_id: int) -> str:
