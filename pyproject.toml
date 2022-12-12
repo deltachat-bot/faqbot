@@ -39,7 +39,7 @@ test = [
 ]
 
 [project.scripts]
-faqbot = "faqbot.cli:main"
+faqbot = "faqbot:main"
 
 [tool.isort]
 profile = "black"
