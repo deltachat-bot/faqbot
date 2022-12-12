@@ -2,42 +2,21 @@ import logging
 import os
 
 import aiofiles
-from deltachat_rpc_client import AttrDict, EventType, events
+from simplebot_aio import AttrDict, BotCli, EventType, events
 from sqlalchemy.future import select
 
 from .orm import FAQ, async_session
+from .utils import get_answer_text, get_faq
 
-hooks = events.HookCollection()
+cli = BotCli("faqbot")
 
 
-@hooks.on(events.RawEvent((EventType.INFO, EventType.WARNING, EventType.ERROR)))
+@cli.on(events.RawEvent((EventType.INFO, EventType.WARNING, EventType.ERROR)))
 async def log_event(event: AttrDict) -> None:
     getattr(logging, event.type.lower())(event.msg)
 
 
-async def _get_faq(chat_id: int) -> str:
-    text = ""
-    async with async_session() as session:
-        stmt = select(FAQ).filter(FAQ.chat_id == chat_id)
-        for faq in (await session.execute(stmt)).scalars().all():
-            text += f"* {faq.question}\n"
-    return text
-
-
-async def _get_answer_text(faq: FAQ, msg: AttrDict) -> str:
-    if not faq.answer_text:
-        return ""
-    kwargs = {}
-    if msg.quote:
-        kwargs["name"] = msg.quote.override_sender_name or msg.quote.author_display_name
-    else:
-        sender = await msg.sender.get_snapshot()
-        kwargs["name"] = msg.override_sender_name or sender.display_name
-    kwargs["faq"] = await _get_faq(msg.chat_id)
-    return faq.answer_text.format(**kwargs)
-
-
-@hooks.on(events.NewMessage(r"^/help$"))
+@cli.on(events.NewMessage(command="/help"))
 async def help_cmd(event: AttrDict) -> None:
     text = """
            **Available commands**
@@ -55,15 +34,15 @@ async def help_cmd(event: AttrDict) -> None:
     await event.chat.send_text(text)
 
 
-@hooks.on(events.NewMessage(r"^/faq$"))
+@cli.on(events.NewMessage(command="/faq"))
 async def faq_cmd(event: AttrDict) -> None:
-    text = await _get_faq(event.chat_id)
+    text = await get_faq(event.chat_id)
     await event.chat.send_text(f"**FAQ**\n\n{text}")
 
 
-@hooks.on(events.NewMessage(r"^/remove .+"))
+@cli.on(events.NewMessage(command="/remove"))
 async def remove_cmd(event: AttrDict) -> None:
-    question = event.text.split(maxsplit=1)[1]
+    question = event.payload
     stmt = select(FAQ).filter(FAQ.chat_id == event.chat_id, FAQ.question == question)
     async with async_session() as session:
         async with session.begin():
@@ -75,9 +54,9 @@ async def remove_cmd(event: AttrDict) -> None:
                 )
 
 
-@hooks.on(events.NewMessage(r"^/save .+"))
+@cli.on(events.NewMessage(command="/save"))
 async def save_cmd(event: AttrDict) -> None:
-    question = event.text.split(maxsplit=1)[1]
+    question = event.payload
     if question.startswith("/"):
         await event.chat.send_message(
             text="Invalid text, can not start with /", quoted_msg=event.id
@@ -108,7 +87,7 @@ async def save_cmd(event: AttrDict) -> None:
     await event.chat.send_message(text="✅ Saved", quoted_msg=event.id)
 
 
-@hooks.on(events.NewMessage(r"^(?!/).+"))
+@cli.on(events.NewMessage(r".+", func=lambda ev: not ev.command))
 async def answer_msg(event: AttrDict) -> None:
     async with async_session() as session:
         stmt = select(FAQ).filter(
@@ -118,7 +97,7 @@ async def answer_msg(event: AttrDict) -> None:
         if faq:
             quoted_msg_id = event.quote.message_id if event.quote else event.id
             kwargs = dict(
-                text=await _get_answer_text(faq, event), quoted_msg=quoted_msg_id
+                text=await get_answer_text(faq, event), quoted_msg=quoted_msg_id
             )
             if faq.answer_file:
                 async with aiofiles.tempfile.TemporaryDirectory() as tmp_dir:

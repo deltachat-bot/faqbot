@@ -23,9 +23,8 @@ dynamic = [
 dependencies = [
     "SQLAlchemy>=1.4.44",
     "aiosqlite>=0.17.0",
-    "appdirs>=1.4.4",
     "aiofiles>=22.1.0",
-    "rich>=12.6.0",
+    "simplebot-aio",
 ]
 
 [project.optional-dependencies]

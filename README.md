@@ -11,7 +11,7 @@ A simple FAQ Bot for Delta Chat groups
 pip install faqbot
 ```
 
-## Using
+## Usage
 
 To see the available options, run in the command line:
 
