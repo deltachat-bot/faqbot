@@ -5,7 +5,7 @@ import aiofiles
 from simplebot_aio import AttrDict, BotCli, EventType, events
 from sqlalchemy.future import select
 
-from .orm import FAQ, async_session
+from .orm import FAQ, async_session, init
 from .utils import get_answer_text, get_faq
 
 cli = BotCli("faqbot")
@@ -107,3 +107,9 @@ async def answer_msg(event: AttrDict) -> None:
                     await event.chat.send_message(file=filename, **kwargs)
             else:
                 await event.chat.send_message(**kwargs)
+
+
+@cli.on_start
+async def on_start(bot, args) -> None:
+    path = os.path.join(args.config_dir, "sqlite.db")
+    await init(f"sqlite+aiosqlite:///{path}")
