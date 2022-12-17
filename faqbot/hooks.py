@@ -26,6 +26,11 @@ async def help_cmd(event: AttrDict) -> None:
            /save TAG - save the quoted message as answer to the given tag/question. The answer can contain special keywords like:
            {faq} - gets replaced by the FAQ/topics list.
            {name} - gets replaced by the name of the sender of the tag/question or the quoted message.
+           {last_seen} - gets replaced by the last time the sender of the quoted message was seen.
+           {date} - gets replaced by the current date.
+           {percent} - gets replaced by a random number in 0-100 range.
+           {dice} - gets replaced by a random dice.
+           {yes_no} - gets replaced randomly by "yes" or "no".
 
            /remove TAG - remove the saved tag/question and its reply
 
