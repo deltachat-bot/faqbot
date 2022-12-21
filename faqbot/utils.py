@@ -1,3 +1,4 @@
+"""Utilities"""
 import random
 from datetime import datetime
 from typing import Callable
@@ -9,6 +10,8 @@ from .orm import FAQ, async_session
 
 
 class RandStr:
+    """Class producing dynamic values each time it is converted to string."""
+
     def __init__(self, func: Callable) -> None:
         self.func = func
 
@@ -17,6 +20,7 @@ class RandStr:
 
 
 async def get_faq(chat_id: int) -> str:
+    """Get the FAQ list as a markdown list."""
     text = ""
     async with async_session() as session:
         stmt = select(FAQ).filter(FAQ.chat_id == chat_id)
@@ -26,6 +30,7 @@ async def get_faq(chat_id: int) -> str:
 
 
 async def get_answer_text(faq: FAQ, event: AttrDict) -> str:
+    """Generate the answer from the given FAQ entry's template answer."""
     if not faq.answer_text:
         return ""
     kwargs = {}
