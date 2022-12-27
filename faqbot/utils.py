@@ -29,28 +29,26 @@ async def get_faq(chat_id: int) -> str:
     return text
 
 
-async def get_answer_text(faq: FAQ, event: AttrDict) -> str:
+async def get_answer_text(faq: FAQ, msg: AttrDict) -> str:
     """Generate the answer from the given FAQ entry's template answer."""
     if not faq.answer_text:
         return ""
     kwargs = {}
-    if event.quote:
-        kwargs["name"] = (
-            event.quote.override_sender_name or event.quote.author_display_name
-        )
+    if msg.quote:
+        kwargs["name"] = msg.quote.override_sender_name or msg.quote.author_display_name
         quote = await (
-            await event.message.account.get_message_by_id(event.quote.message_id)
+            msg.message.account.get_message_by_id(msg.quote.message_id)
         ).get_snapshot()
         sender = await quote.sender.get_snapshot()
     else:
-        sender = await event.sender.get_snapshot()
-        kwargs["name"] = event.override_sender_name or sender.display_name
+        sender = await msg.sender.get_snapshot()
+        kwargs["name"] = msg.override_sender_name or sender.display_name
     if sender.last_seen:
         last_seen = datetime.fromtimestamp(sender.last_seen)
         kwargs["last_seen"] = str(last_seen.replace(microsecond=0))
     else:
         kwargs["last_seen"] = "never"
-    kwargs["faq"] = await get_faq(event.chat_id)
+    kwargs["faq"] = await get_faq(msg.chat_id)
     kwargs["percent"] = RandStr(lambda: random.randint(0, 100))
     kwargs["yes_no"] = RandStr(lambda: random.choice(["yes", "no"]))
     kwargs["dice"] = RandStr(lambda: random.choice(["⚀", "⚁", "⚂", "⚃", "⚄", "⚅"]))

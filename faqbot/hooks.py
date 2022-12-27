@@ -72,7 +72,7 @@ async def _save(event: AttrDict) -> None:
     quote = msg.quote
     assert quote
     quote = await (
-        await msg.message.account.get_message_by_id(quote.message_id)
+        msg.message.account.get_message_by_id(quote.message_id)
     ).get_snapshot()
     if quote.file:
         async with aiofiles.open(quote.file, mode="rb") as attachment:
