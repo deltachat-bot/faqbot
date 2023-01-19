@@ -3,7 +3,7 @@ import logging
 import os
 
 import aiofiles
-from simplebot_aio import AttrDict, BotCli, EventType, events
+from simplebot_aio import AttrDict, BotCli, EventType, const, events
 from sqlalchemy.future import select
 
 from .orm import FAQ, async_session, init
@@ -36,6 +36,9 @@ async def _help(event: AttrDict) -> None:
            /remove TAG - remove the saved tag/question and its reply
 
 
+           **How to use me?**
+
+           Add me to a group then you can use the /save and /faq commands there
            """
     await event.message_snapshot.chat.send_text(text)
 
@@ -43,6 +46,14 @@ async def _help(event: AttrDict) -> None:
 @cli.on(events.NewMessage(command="/faq"))
 async def _faq(event: AttrDict) -> None:
     msg = event.message_snapshot
+    chat = await msg.chat.get_basic_snapshot()
+    if chat.chat_type == const.ChatType.SINGLE:
+        await msg.chat.send_message(
+            text="Can't save notes in private, add me to a group and use the command there",
+            quoted_msg=msg.id,
+        )
+        return
+
     text = await get_faq(msg.chat_id)
     await msg.chat.send_text(f"**FAQ**\n\n{text}")
 
@@ -50,6 +61,14 @@ async def _faq(event: AttrDict) -> None:
 @cli.on(events.NewMessage(command="/remove"))
 async def _remove(event: AttrDict) -> None:
     msg = event.message_snapshot
+    chat = await msg.chat.get_basic_snapshot()
+    if chat.chat_type == const.ChatType.SINGLE:
+        await msg.chat.send_message(
+            text="Can't save notes in private, add me to a group and use the command there",
+            quoted_msg=msg.id,
+        )
+        return
+
     question = event.payload
     stmt = select(FAQ).filter(FAQ.chat_id == msg.chat_id, FAQ.question == question)
     async with async_session() as session:
@@ -63,10 +82,19 @@ async def _remove(event: AttrDict) -> None:
 @cli.on(events.NewMessage(command="/save"))
 async def _save(event: AttrDict) -> None:
     msg = event.message_snapshot
-    question = event.payload
-    if question.startswith("/"):
+    chat = await msg.chat.get_basic_snapshot()
+    if chat.chat_type == const.ChatType.SINGLE:
         await msg.chat.send_message(
-            text="Invalid text, can not start with /", quoted_msg=msg.id
+            text="Can't save notes in private, add me to a group and use the command there",
+            quoted_msg=msg.id,
+        )
+        return
+
+    question = event.payload
+    if question.startswith(const.COMMAND_PREFIX):
+        await msg.chat.send_message(
+            text=f"Invalid text, can not start with {const.COMMAND_PREFIX}",
+            quoted_msg=msg.id,
         )
         return
     quote = msg.quote
@@ -94,9 +122,16 @@ async def _save(event: AttrDict) -> None:
     await msg.chat.send_message(text="✅ Saved", quoted_msg=msg.id)
 
 
-@cli.on(events.NewMessage(r".+", func=lambda ev: not ev.command))
+@cli.on(events.NewMessage(is_info=False, func=cli.is_not_known_command))
 async def _answer(event: AttrDict) -> None:
     msg = event.message_snapshot
+    chat = await msg.chat.get_basic_snapshot()
+    if not msg.text or chat.chat_type == const.ChatType.SINGLE:
+        await _help(event)
+        return
+    if event.command:
+        return
+
     async with async_session() as session:
         stmt = select(FAQ).filter(FAQ.chat_id == msg.chat_id, FAQ.question == msg.text)
         faq = (await session.execute(stmt)).scalars().first()
