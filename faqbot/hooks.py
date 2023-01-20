@@ -126,10 +126,10 @@ async def _save(event: AttrDict) -> None:
 async def _answer(event: AttrDict) -> None:
     msg = event.message_snapshot
     chat = await msg.chat.get_basic_snapshot()
-    if not msg.text or chat.chat_type == const.ChatType.SINGLE:
+    if chat.chat_type == const.ChatType.SINGLE:
         await _help(event)
         return
-    if event.command:
+    if event.command or not msg.text:
         return
 
     async with async_session() as session:
