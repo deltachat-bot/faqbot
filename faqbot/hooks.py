@@ -1,9 +1,10 @@
 """Event Hooks"""
 import logging
 import os
+from argparse import Namespace
 
 import aiofiles
-from simplebot_aio import AttrDict, BotCli, EventType, const, events
+from simplebot_aio import AttrDict, Bot, BotCli, EventType, const, events
 from sqlalchemy.future import select
 
 from .orm import FAQ, async_session, init
@@ -12,9 +13,28 @@ from .utils import get_answer_text, get_faq
 cli = BotCli("faqbot")
 
 
-@cli.on(events.RawEvent((EventType.INFO, EventType.WARNING, EventType.ERROR)))
-async def _log_event(event: AttrDict) -> None:
-    getattr(logging, event.type.lower())(event.msg)
+@cli.on_init
+async def on_init(bot: Bot, _args: Namespace) -> None:
+    if not await bot.account.get_config("displayname"):
+        await bot.account.set_config("displayname", "FAQ Bot")
+        status = "📸 I am a Delta Chat bot, send me /help for more info"
+        await bot.account.set_config("selfstatus", status)
+
+
+@cli.on_start
+async def _on_start(_bot: Bot, args: Namespace) -> None:
+    path = os.path.join(args.config_dir, "sqlite.db")
+    await init(f"sqlite+aiosqlite:///{path}")
+
+
+@cli.on(events.RawEvent)
+async def log_event(event: AttrDict) -> None:
+    if event.type == EventType.INFO:
+        logging.info(event.msg)
+    elif event.type == EventType.WARNING:
+        logging.warning(event.msg)
+    elif event.type == EventType.ERROR:
+        logging.error(event.msg)
 
 
 @cli.on(events.NewMessage(command="/help"))
@@ -148,9 +168,3 @@ async def _answer(event: AttrDict) -> None:
                     await msg.chat.send_message(file=filename, **kwargs)
             else:
                 await msg.chat.send_message(**kwargs)
-
-
-@cli.on_start
-async def _on_start(_bot, args) -> None:
-    path = os.path.join(args.config_dir, "sqlite.db")
-    await init(f"sqlite+aiosqlite:///{path}")
