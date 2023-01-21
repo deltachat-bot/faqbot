@@ -6,4 +6,7 @@ from .hooks import cli
 
 def main() -> None:
     """Run the application."""
-    asyncio.run(cli.start())
+    try:
+        asyncio.run(cli.start())
+    except KeyboardInterrupt:
+        pass
