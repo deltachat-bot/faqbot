@@ -3,7 +3,7 @@ import random
 from datetime import datetime
 from typing import Callable
 
-from simplebot_aio import AttrDict
+from deltabot_cli import AttrDict
 from sqlalchemy.future import select
 
 from .orm import FAQ, async_session

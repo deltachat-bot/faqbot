@@ -4,7 +4,7 @@ import os
 from argparse import Namespace
 
 import aiofiles
-from simplebot_aio import AttrDict, Bot, BotCli, EventType, const, events
+from deltabot_cli import AttrDict, Bot, BotCli, EventType, const, events
 from sqlalchemy.future import select
 
 from .orm import FAQ, async_session, init
