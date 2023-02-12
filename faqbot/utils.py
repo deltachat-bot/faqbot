@@ -36,8 +36,8 @@ async def get_answer_text(faq: FAQ, msg: AttrDict) -> str:
     kwargs = {}
     if msg.quote:
         kwargs["name"] = msg.quote.override_sender_name or msg.quote.author_display_name
-        quote = await (
-            msg.message.account.get_message_by_id(msg.quote.message_id)
+        quote = await msg.message.account.get_message_by_id(
+            msg.quote.message_id
         ).get_snapshot()
         sender = await quote.sender.get_snapshot()
     else:
