@@ -155,9 +155,10 @@ async def _answer(event: AttrDict) -> None:
         faq = (await session.execute(stmt)).scalars().first()
         if faq:
             quoted_msg_id = msg.quote.message_id if msg.quote else msg.id
-            kwargs = dict(
-                text=await get_answer_text(faq, msg), quoted_msg=quoted_msg_id
-            )
+            kwargs = {
+                "text": await get_answer_text(faq, msg),
+                "quoted_msg": quoted_msg_id,
+            }
             if faq.answer_file:
                 async with aiofiles.tempfile.TemporaryDirectory() as tmp_dir:
                     filename = os.path.join(tmp_dir, faq.answer_filename)
