@@ -8,8 +8,14 @@ A simple FAQ Bot for Delta Chat groups
 ## Install
 
 ```sh
-pip install faqbot
+pip install git+https://github.com/deltachat-bot/faqbot.git
 ```
+
+### Installing deltachat-rpc-server
+
+This program depends on a standalone Delta Chat RPC server `deltachat-rpc-server` program that must be
+available in your `PATH`. To install it check:
+https://github.com/deltachat/deltachat-core-rust/tree/master/deltachat-rpc-server
 
 ## Usage
 
