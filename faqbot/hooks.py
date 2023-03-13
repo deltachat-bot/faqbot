@@ -17,7 +17,7 @@ cli = BotCli("faqbot")
 async def on_init(bot: Bot, _args: Namespace) -> None:
     if not await bot.account.get_config("displayname"):
         await bot.account.set_config("displayname", "FAQ Bot")
-        status = "📸 I am a Delta Chat bot, send me /help for more info"
+        status = "I am a Delta Chat bot, send me /help for more info"
         await bot.account.set_config("selfstatus", status)
 
 
