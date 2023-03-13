@@ -19,8 +19,16 @@ https://github.com/deltachat/deltachat-core-rust/tree/master/deltachat-rpc-serve
 
 ## Usage
 
-To see the available options, run in the command line:
+Configure the bot:
 
+```sh
+faqbot init bot@example.com PASSWORD
 ```
-faqbot --help
+
+Start the bot:
+
+```sh
+faqbot
 ```
+
+Run `faqbot --help` to see all available options.
