@@ -28,7 +28,7 @@ faqbot init bot@example.com PASSWORD
 Start the bot:
 
 ```sh
-faqbot
+faqbot serve
 ```
 
 Run `faqbot --help` to see all available options.
