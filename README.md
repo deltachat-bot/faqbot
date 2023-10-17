@@ -1,6 +1,6 @@
 # FAQ Bot
 
-[![Latest Release](https://img.shields.io/pypi/v/faqbot.svg)](https://pypi.org/project/faqbot)
+[![Latest Release](https://img.shields.io/pypi/v/deltachat-faqbot.svg)](https://pypi.org/project/deltachat-faqbot)
 [![CI](https://github.com/deltachat-bot/faqbot/actions/workflows/python-ci.yml/badge.svg)](https://github.com/deltachat-bot/faqbot/actions/workflows/python-ci.yml)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
