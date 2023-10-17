@@ -136,7 +136,8 @@ def _save(event: AttrDict) -> None:
         msg.chat.send_message(text="✅ Saved", quoted_msg=msg.id)
     except IntegrityError:
         msg.chat.send_message(
-            text=f"❌ Error: there is already a saved reply for that tag/question, use /remove first to remove the old reply",
+            text="❌ Error: there is already a saved reply for that tag/question,"
+            " use /remove first to remove the old reply",
             quoted_msg=msg.id,
         )
 
