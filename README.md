@@ -9,7 +9,7 @@ A simple FAQ Bot for Delta Chat groups
 ## Install
 
 ```sh
-pip install faqbot
+pip install deltachat-faqbot
 ```
 
 ### Installing deltachat-rpc-server
