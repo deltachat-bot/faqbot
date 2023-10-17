@@ -1,10 +1,14 @@
 """database"""
+from contextlib import contextmanager
+from threading import Lock
 
-from sqlalchemy import Column, Integer, LargeBinary, String
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
-from sqlalchemy.orm import declarative_base, sessionmaker
+from sqlalchemy import Column, Integer, LargeBinary, String, create_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
 
 Base = declarative_base()
+_Session = sessionmaker()
+_lock = Lock()
 _session = None  # noqa
 
 
@@ -19,16 +23,23 @@ class FAQ(Base):  # noqa
     answer_viewtype = Column(String, nullable=False)
 
 
-def async_session():
-    """Get session"""
-    return _session()
+@contextmanager
+def session_scope():
+    """Provide a transactional scope around a series of operations."""
+    with _lock:
+        session = _Session()
+        try:
+            yield session
+            session.commit()
+        except Exception:
+            session.rollback()
+            raise
+        finally:
+            session.close()
 
 
-async def init(path: str, debug: bool = False) -> None:
+def init(path: str, debug: bool = False) -> None:
     """Initialize engine."""
-    global _session  # noqa
-    engine = create_async_engine(path, echo=debug)
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-
-    _session = sessionmaker(engine, class_=AsyncSession)
+    engine = create_engine(path, echo=debug)
+    Base.metadata.create_all(engine)
+    _Session.configure(bind=engine)

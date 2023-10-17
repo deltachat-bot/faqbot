@@ -1,5 +1,6 @@
 # FAQ Bot
 
+[![Latest Release](https://img.shields.io/pypi/v/faqbot.svg)](https://pypi.org/project/faqbot)
 [![CI](https://github.com/deltachat-bot/faqbot/actions/workflows/python-ci.yml/badge.svg)](https://github.com/deltachat-bot/faqbot/actions/workflows/python-ci.yml)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
@@ -8,13 +9,13 @@ A simple FAQ Bot for Delta Chat groups
 ## Install
 
 ```sh
-pip install git+https://github.com/deltachat-bot/faqbot.git
+pip install faqbot
 ```
 
 ### Installing deltachat-rpc-server
 
-This program depends on a standalone Delta Chat RPC server `deltachat-rpc-server` program that must be
-available in your `PATH`. To install it check:
+This package depends on a standalone Delta Chat RPC server `deltachat-rpc-server` program.
+To install it check:
 https://github.com/deltachat/deltachat-core-rust/tree/master/deltachat-rpc-server
 
 ## Usage

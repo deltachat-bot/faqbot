@@ -1,8 +1,9 @@
 [build-system]
-requires = ["setuptools>=45", "setuptools_scm[toml]>=6.2"]
+requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [project]
+version = "0.1.0"
 name = "faqbot"
 description = "FAQ bot, help to answer common questions in support groups"
 readme = "README.md"
@@ -10,21 +11,15 @@ requires-python = ">=3.7"
 license = {file = "LICENSE.txt"}
 keywords = ["deltachat", "bot"]
 authors = [
-  {email = "adbenitez@hispanilandia.net"},
-  {name = "adbenitez"}
+  {name = "adbenitez", email = "adbenitez@hispanilandia.net"},
 ]
 classifiers = [
   "Development Status :: 4 - Beta",
   "Programming Language :: Python"
 ]
-dynamic = [
-    "version"
-]
 dependencies = [
     "SQLAlchemy>=1.4.44",
-    "aiosqlite>=0.17.0",
-    "aiofiles>=22.1.0",
-    "deltabot-cli @ git+https://github.com/deltachat-bot/deltabot-cli-py.git",
+    "deltabot-cli",
 ]
 
 [project.optional-dependencies]
@@ -35,7 +30,6 @@ dev = [
   "pylint",
   "pylama",
   "pytest",
-  "types-aiofiles",
 ]
 
 [project.scripts]
