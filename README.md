@@ -12,12 +12,6 @@ A simple FAQ Bot for Delta Chat groups
 pip install deltachat-faqbot
 ```
 
-### Installing deltachat-rpc-server
-
-This package depends on a standalone Delta Chat RPC server `deltachat-rpc-server` program.
-To install it check:
-https://github.com/deltachat/deltachat-core-rust/tree/master/deltachat-rpc-server
-
 ## Usage
 
 Configure the bot:
