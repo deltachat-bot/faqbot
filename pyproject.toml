@@ -3,7 +3,7 @@ requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [project]
-version = "0.3.0"
+version = "0.3.1"
 name = "deltachat-faqbot"
 description = "FAQ bot, help to answer common questions in support groups"
 readme = "README.md"
@@ -19,8 +19,8 @@ classifiers = [
 ]
 dependencies = [
     "SQLAlchemy>=1.4.44",
-    "deltabot-cli",
-    "deltachat-rpc-server",
+    "deltabot-cli>=0.1.0",
+    "deltachat-rpc-server>=1.127.0",
 ]
 
 [project.optional-dependencies]
