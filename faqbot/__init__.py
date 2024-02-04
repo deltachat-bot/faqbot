@@ -1,4 +1,5 @@
 """FAQ bot."""
+
 from .hooks import cli
 
 
