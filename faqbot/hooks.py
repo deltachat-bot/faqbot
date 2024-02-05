@@ -173,8 +173,9 @@ def _answer(bot: Bot, accid: int, event: AttrDict) -> None:
                     filename = os.path.join(tmp_dir, faq.answer_filename)
                     with open(filename, mode="wb") as attachment:
                         attachment.write(faq.answer_file)
-                    reply["file"] = filename
-            bot.rpc.send_msg(accid, msg.chat_id, reply)
+                    bot.rpc.send_msg(accid, msg.chat_id, {"file": filename, **reply})
+            else:
+                bot.rpc.send_msg(accid, msg.chat_id, reply)
 
 
 def reply_to_command_in_dm(bot: Bot, accid: int, msg: AttrDict) -> bool:
