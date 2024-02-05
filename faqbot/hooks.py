@@ -29,6 +29,7 @@ def on_init(bot: Bot, _args: Namespace) -> None:
             bot.rpc.set_config(accid, "displayname", "FAQ Bot")
             status = "I am a Delta Chat bot, send me /help for more info"
             bot.rpc.set_config(accid, "selfstatus", status)
+            bot.rpc.set_config(accid, "delete_server_after", "1")
 
 
 @cli.on_start
