@@ -4,7 +4,15 @@ import os
 from argparse import Namespace
 from tempfile import TemporaryDirectory
 
-from deltabot_cli import AttrDict, Bot, BotCli, EventType, const, events
+from deltabot_cli import (
+    AttrDict,
+    Bot,
+    BotCli,
+    EventType,
+    const,
+    events,
+    is_not_known_command,
+)
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.future import select
 
@@ -131,7 +139,7 @@ def _save(bot: Bot, accid: int, event: AttrDict) -> None:
     bot.rpc.send_msg(accid, msg.chat_id, reply)
 
 
-@cli.on(events.NewMessage(is_info=False, func=cli.is_not_known_command))
+@cli.on(events.NewMessage(is_info=False, func=is_not_known_command))
 def _answer(bot: Bot, accid: int, event: AttrDict) -> None:
     msg = event.msg
     chat = bot.rpc.get_basic_chat_info(accid, msg.chat_id)

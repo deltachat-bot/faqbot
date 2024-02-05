@@ -1,25 +1,25 @@
 [build-system]
-requires = ["setuptools"]
+requires = ["setuptools>=64", "setuptools_scm>=8"]
 build-backend = "setuptools.build_meta"
 
 [project]
-version = "0.3.1"
 name = "deltachat-faqbot"
 description = "FAQ bot, help to answer common questions in support groups"
+dynamic = ["version"]
 readme = "README.md"
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 license = {file = "LICENSE.txt"}
 keywords = ["deltachat", "bot"]
 authors = [
-  {name = "adbenitez", email = "adbenitez@hispanilandia.net"},
+  {name = "adbenitez", email = "adb@merlinux.eu"},
 ]
 classifiers = [
   "Development Status :: 4 - Beta",
   "Programming Language :: Python"
 ]
 dependencies = [
-    "SQLAlchemy>=1.4.44",
-    "deltabot-cli>=2.0.0,<3.0",
+    "SQLAlchemy>=2.0.25<3.0",
+    "deltabot-cli>=3.0.0,<4.0",
 ]
 
 [project.optional-dependencies]
@@ -34,6 +34,9 @@ dev = [
 
 [project.scripts]
 faqbot = "faqbot:main"
+
+[tool.setuptools_scm]
+# can be empty if no extra settings are needed, presence enables setuptools_scm
 
 [tool.isort]
 profile = "black"
