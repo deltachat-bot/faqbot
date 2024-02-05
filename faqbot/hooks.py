@@ -100,7 +100,7 @@ def _remove(bot: Bot, accid: int, event: AttrDict) -> None:
             faq = (session.execute(stmt)).scalars().first()
             if faq:
                 session.delete(faq)
-                reply = {"text": "✅ Note removed", "quoted_message_id": msg.id}
+                reply = {"text": "✅ Note removed", "quotedMessageId": msg.id}
                 bot.rpc.send_msg(accid, msg.chat_id, reply)
 
 
@@ -114,7 +114,7 @@ def _save(bot: Bot, accid: int, event: AttrDict) -> None:
     if question.startswith(const.COMMAND_PREFIX):
         reply = {
             "text": f"Invalid text, can not start with {const.COMMAND_PREFIX}",
-            "quoted_message_id": msg.id,
+            "quotedMessageId": msg.id,
         }
         bot.rpc.send_msg(accid, msg.chat_id, reply)
         return
@@ -139,12 +139,12 @@ def _save(bot: Bot, accid: int, event: AttrDict) -> None:
                         answer_viewtype=quote.view_type,
                     )
                 )
-        reply = {"text": "✅ Saved", "quoted_message_id": msg.id}
+        reply = {"text": "✅ Saved", "quotedMessageId": msg.id}
     except IntegrityError:
         reply = {
             "text": "❌ Error: there is already a saved reply for that tag/question,"
             " use /remove first to remove the old reply",
-            "quoted_message_id": msg.id,
+            "quotedMessageId": msg.id,
         }
     bot.rpc.send_msg(accid, msg.chat_id, reply)
 
@@ -166,7 +166,7 @@ def _answer(bot: Bot, accid: int, event: AttrDict) -> None:
             quoted_msg_id = msg.quote.message_id if msg.quote else msg.id
             reply = {
                 "text": get_answer_text(bot, accid, faq, msg, session),
-                "quoted_message_id": quoted_msg_id,
+                "quotedMessageId": quoted_msg_id,
             }
             if faq.answer_file:
                 with TemporaryDirectory() as tmp_dir:
@@ -183,7 +183,7 @@ def reply_to_command_in_dm(bot: Bot, accid: int, msg: AttrDict) -> bool:
     if chat.chat_type == const.ChatType.SINGLE:
         reply = {
             "text": "Can't save notes in private, add me to a group and use the command there",
-            "quoted_message_id": msg.id,
+            "quotedMessageId": msg.id,
         }
         bot.rpc.send_msg(accid, msg.chat_id, reply)
         return True
