@@ -39,17 +39,26 @@ def _on_start(_bot: Bot, args: Namespace) -> None:
 
 
 @cli.on(events.RawEvent)
-def log_event(bot: Bot, _accid: int, event: AttrDict) -> None:
+def log_event(bot: Bot, accid: int, event: AttrDict) -> None:
     if event.kind == EventType.INFO:
         bot.logger.info(event.msg)
     elif event.kind == EventType.WARNING:
         bot.logger.warning(event.msg)
     elif event.kind == EventType.ERROR:
         bot.logger.error(event.msg)
+    elif event.kind == EventType.SECUREJOIN_INVITER_PROGRESS:
+        if event.prgress == 1000:
+            bot.logger.debug("QR scanned by contact id=%s", event.contact_id)
+            chatid = bot.rpc.create_chat_by_contact_id(accid, event.contact_id)
+            send_help(bot, accid, chatid)
 
 
 @cli.on(events.NewMessage(command="/help"))
 def _help(bot: Bot, accid: int, event: AttrDict) -> None:
+    send_help(bot, accid, event.msg.chat_id)
+
+
+def send_help(bot: Bot, accid: int, chat_id: int) -> None:
     text = """**Available commands**
 
 /faq - sends available topics.
@@ -64,7 +73,7 @@ def _help(bot: Bot, accid: int, event: AttrDict) -> None:
 **How to use me?**
 
 Add me to a group then you can use the /save and /faq commands there"""
-    bot.rpc.send_msg(accid, event.msg.chat_id, {"text": text})
+    bot.rpc.send_msg(accid, chat_id, {"text": text})
 
 
 @cli.on(events.NewMessage(command="/faq"))
