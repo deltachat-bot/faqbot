@@ -69,7 +69,7 @@ Add me to a group then you can use the /save and /faq commands there"""
 @cli.on(events.NewMessage(command="/faq"))
 def _faq(bot: Bot, accid: int, event: AttrDict) -> None:
     msg = event.msg
-    if replyToCommandInDM(bot, accid, msg):
+    if reply_to_command_in_dm(bot, accid, msg):
         return
 
     with session_scope() as session:
@@ -80,7 +80,7 @@ def _faq(bot: Bot, accid: int, event: AttrDict) -> None:
 @cli.on(events.NewMessage(command="/remove"))
 def _remove(bot: Bot, accid: int, event: AttrDict) -> None:
     msg = event.msg
-    if replyToCommandInDM(bot, accid, msg):
+    if reply_to_command_in_dm(bot, accid, msg):
         return
 
     question = event.payload
@@ -97,7 +97,7 @@ def _remove(bot: Bot, accid: int, event: AttrDict) -> None:
 @cli.on(events.NewMessage(command="/save"))
 def _save(bot: Bot, accid: int, event: AttrDict) -> None:
     msg = event.msg
-    if replyToCommandInDM(bot, accid, msg):
+    if reply_to_command_in_dm(bot, accid, msg):
         return
 
     question = event.payload
@@ -167,7 +167,7 @@ def _answer(bot: Bot, accid: int, event: AttrDict) -> None:
             bot.rpc.send_msg(accid, msg.chat_id, reply)
 
 
-def replyToCommandInDM(bot: Bot, accid: int, msg: AttrDict) -> bool:
+def reply_to_command_in_dm(bot: Bot, accid: int, msg: AttrDict) -> bool:
     chat = bot.rpc.get_basic_chat_info(accid, msg.chat_id)
     if chat.chat_type == const.ChatType.SINGLE:
         reply = {
