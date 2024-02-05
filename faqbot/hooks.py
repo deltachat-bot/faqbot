@@ -47,7 +47,7 @@ def log_event(bot: Bot, accid: int, event: AttrDict) -> None:
     elif event.kind == EventType.ERROR:
         bot.logger.error(event.msg)
     elif event.kind == EventType.SECUREJOIN_INVITER_PROGRESS:
-        if event.prgress == 1000:
+        if event.progress == 1000:
             bot.logger.debug("QR scanned by contact id=%s", event.contact_id)
             chatid = bot.rpc.create_chat_by_contact_id(accid, event.contact_id)
             send_help(bot, accid, chatid)
