@@ -149,11 +149,18 @@ def _save(bot: Bot, accid: int, event: AttrDict) -> None:
     bot.rpc.send_msg(accid, msg.chat_id, reply)
 
 
+@cli.on(events.NewMessage(is_info=False))
+def markseen_commands(bot: Bot, accid: int, event: AttrDict) -> None:
+    if not is_not_known_command(bot, event):
+        bot.rpc.markseen_msgs(accid, [event.msg.id])
+
+
 @cli.on(events.NewMessage(is_info=False, func=is_not_known_command))
 def _answer(bot: Bot, accid: int, event: AttrDict) -> None:
     msg = event.msg
     chat = bot.rpc.get_basic_chat_info(accid, msg.chat_id)
     if chat.chat_type == const.ChatType.SINGLE:
+        bot.rpc.markseen_msgs(accid, [msg.id])
         _help(bot, accid, event)
         return
     if event.command or not msg.text:
