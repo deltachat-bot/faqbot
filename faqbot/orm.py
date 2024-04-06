@@ -2,18 +2,20 @@
 
 from contextlib import contextmanager
 from threading import Lock
+from typing import Any
 
 from sqlalchemy import Column, Integer, LargeBinary, String, create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-Base = declarative_base()
+Base: Any = declarative_base()
 _Session = sessionmaker()
 _lock = Lock()
-_session = None  # noqa
 
 
-class FAQ(Base):  # noqa
+class FAQ(Base):
+    """A FAQ entry."""
+
     __tablename__ = "faq"
     chat_id = Column(Integer, primary_key=True)
     question = Column(String, primary_key=True)
