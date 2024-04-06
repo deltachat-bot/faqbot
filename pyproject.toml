@@ -3,7 +3,7 @@ requires = ["setuptools>=64", "setuptools_scm>=8"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "faqbot"
+name = "deltachat-faqbot"
 description = "FAQ bot, help to answer common questions in support groups"
 dynamic = ["version"]
 readme = "README.md"
@@ -21,9 +21,6 @@ dependencies = [
     "SQLAlchemy>=2.0.25,<3.0",
     "deltabot-cli>=6.0.0,<7.0",
 ]
-
-[project.urls]
-Homepage = "https://github.com/deltachat-bot/faqbot"
 
 [project.optional-dependencies]
 dev = [
