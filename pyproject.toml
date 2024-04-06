@@ -19,7 +19,7 @@ classifiers = [
 ]
 dependencies = [
     "SQLAlchemy>=2.0.25,<3.0",
-    "deltabot-cli>=3.0.0,<4.0",
+    "deltabot-cli>=6.0.0,<7.0",
 ]
 
 [project.optional-dependencies]

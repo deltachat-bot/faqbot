@@ -1,6 +1,6 @@
 """Utilities"""
 
-from deltabot_cli import AttrDict, Bot
+from deltachat2 import Bot, Message
 from sqlalchemy.future import select
 
 from .orm import FAQ
@@ -15,7 +15,7 @@ def get_faq(chat_id: int, session) -> str:
     return text
 
 
-def get_answer_text(bot: Bot, accid: int, faq: FAQ, msg: AttrDict, session) -> str:
+def get_answer_text(bot: Bot, accid: int, faq: FAQ, msg: Message, session) -> str:
     """Generate the answer from the given FAQ entry's template answer."""
     if not faq.answer_text:
         return ""
