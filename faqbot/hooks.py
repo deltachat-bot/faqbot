@@ -18,10 +18,12 @@ from deltachat2 import (
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.future import select
 
+from ._version import __version__
 from .orm import FAQ, init, session_scope
 from .utils import get_answer_text, get_faq
 
 cli = BotCli("faqbot")
+cli.add_generic_option("-v", "--version", action="version", version=__version__)
 
 
 @cli.on_init
@@ -58,6 +60,7 @@ def log_event(bot: Bot, accid: int, event: CoreEvent) -> None:
 
 @cli.on(events.NewMessage(command="/help"))
 def _help(bot: Bot, accid: int, event: NewMsgEvent) -> None:
+    bot.rpc.markseen_msgs(accid, [event.msg.id])
     send_help(bot, accid, event.msg.chat_id)
 
 
@@ -153,12 +156,6 @@ def _save(bot: Bot, accid: int, event: NewMsgEvent) -> None:
 
 
 @cli.on(events.NewMessage(is_info=False))
-def markseen_commands(bot: Bot, accid: int, event: NewMsgEvent) -> None:
-    if bot.has_command(event.command):
-        bot.rpc.markseen_msgs(accid, [event.msg.id])
-
-
-@cli.on(events.NewMessage(is_info=False))
 def _answer(bot: Bot, accid: int, event: NewMsgEvent) -> None:
     if bot.has_command(event.command):
         return
@@ -194,6 +191,7 @@ def _answer(bot: Bot, accid: int, event: NewMsgEvent) -> None:
 def reply_to_command_in_dm(bot: Bot, accid: int, msg: Message) -> bool:
     chat = bot.rpc.get_basic_chat_info(accid, msg.chat_id)
     if chat.chat_type == ChatType.SINGLE:
+        bot.rpc.markseen_msgs(accid, [msg.id])
         reply = MsgData(
             text="Can't save notes in private, add me to a group and use the command there",
             quoted_message_id=msg.id,
