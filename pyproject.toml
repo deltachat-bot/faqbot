@@ -36,11 +36,11 @@ dev = [
 ]
 
 [project.scripts]
-faqbot = "faqbot:main"
+faqbot = "deltachat_faqbot:main"
 
 [tool.setuptools_scm]
 # can be empty if no extra settings are needed, presence enables setuptools_scm
-version_file = "faqbot/_version.py"
+version_file = "deltachat_faqbot/_version.py"
 
 [tool.isort]
 profile = "black"
