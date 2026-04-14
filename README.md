@@ -17,7 +17,7 @@ pip install deltachat-faqbot
 Configure the bot:
 
 ```sh
-faqbot init bot@example.com PASSWORD
+faqbot init dcaccount:nine.testrun.org
 ```
 
 Start the bot:
