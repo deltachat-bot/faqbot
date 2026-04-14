@@ -18,8 +18,8 @@ classifiers = [
   "License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)",
 ]
 dependencies = [
+    "deltabot-cli>=8.1.0,<9.0",
     "SQLAlchemy>=2.0.49,<3.0",
-    "deltabot-cli>=8.0.0,<9.0",
 ]
 
 [project.urls]
@@ -28,11 +28,8 @@ Homepage = "https://github.com/deltachat-bot/faqbot"
 [project.optional-dependencies]
 dev = [
   "black",
-  "mypy",
   "isort",
-  "pylint",
-  "pylama",
-  "pytest",
+  "prospector[with-mypy]",
 ]
 
 [project.scripts]
